@@ -5,6 +5,6 @@ libraryDependencies ++= Seq(
   "io.confluent" % "kafka-avro-serializer" % "3.1.1",
   "org.apache.kafka" % "kafka-streams" % "1.1.0",
   "org.apache.kafka" % "kafka-clients" % "1.1.0",
-  "org.apache.kafka" % "kafka-streams-test-utils" % "1.1.0",
+  "org.apache.kafka" % "kafka-streams-test-utils" % "1.1.0" % Test,
   "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )

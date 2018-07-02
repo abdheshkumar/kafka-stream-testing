@@ -6,10 +6,8 @@ import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.scalatest.{FlatSpec, Matchers}
 
 class WordCountSpec extends FlatSpec with Matchers with TestSpec {
-
-
   val wordCountApplication = new WordCountApplication()
-  "toLowerCase" should "push lower text to kafka" in {
+  "Convert streaming data into lowercase and publish into output topic" should "push lower text to kafka" in {
     val driver = new TopologyTestDriver(wordCountApplication.toLowerCaseStream("input-topic", "output-topic"), config)
     val recordFactory = new ConsumerRecordFactory("input-topic", new StringSerializer(), new StringSerializer())
     val words = "Hello, world world test"
@@ -22,13 +20,21 @@ class WordCountSpec extends FlatSpec with Matchers with TestSpec {
   "WorkCount" should "count number of words" in {
     val driver = new TopologyTestDriver(wordCountApplication.countNumberOfWords("input-topic", "output-topic", "counts-store"), config)
     val recordFactory = new ConsumerRecordFactory("input-topic", new StringSerializer(), new StringSerializer())
-    val words = "Hello, world world test"
+    val words = "Hello Kafka Streams, All streams lead to Kafka"
     driver.pipeInput(recordFactory.create(words))
     val store: KeyValueStore[String, java.lang.Long] = driver.getKeyValueStore("counts-store")
     store.get("hello") shouldBe 1
-    store.get("world") shouldBe 2
-    store.get("test") shouldBe 1
+    store.get("kafka") shouldBe 2
+    store.get("streams") shouldBe 2
+    store.get("lead") shouldBe 1
+    store.get("to") shouldBe 1
     driver.close()
+
+    /*
+    val expected: List[(String, java.lang.Long)] = List("hello" -> 1L, "kafka" -> 2L, "streams" -> 2L, "all" -> 1L, "lead" -> 1L, "to" -> 1L)
+    expected.foreach { case (key, expectedValue) =>
+      store.get(key) shouldBe expectedValue
+    }*/
   }
 
 }
