@@ -19,7 +19,12 @@ class UnitTestSpec extends FlatSpec with BeforeAndAfter with Matchers {
     val topology = new Topology
     topology.addSource("sourceProcessor", "input-topic")
     topology.addProcessor("aggregator", new CustomMaxAggregatorSupplier(), "sourceProcessor")
-    topology.addStateStore(Stores.keyValueStoreBuilder(Stores.inMemoryKeyValueStore("aggStore"), Serdes.String, Serdes.Long).withLoggingDisabled, // need to disable logging to allow store pre-populating
+    topology.addStateStore(
+      Stores.keyValueStoreBuilder(
+        Stores.inMemoryKeyValueStore("aggStore"),
+        Serdes.String,
+        Serdes.Long)
+        .withLoggingDisabled, // need to disable logging to allow store pre-populating
       "aggregator")
     topology.addSink("sinkProcessor", "result-topic", "aggregator")
     // setup test driver// setup test driver
@@ -70,9 +75,7 @@ class UnitTestSpec extends FlatSpec with BeforeAndAfter with Matchers {
     OutputVerifier.compareKeyValue(testDriver.readOutput("result-topic", stringDeserializer, longDeserializer), "a", 21L: java.lang.Long)
     testDriver.readOutput("result-topic", stringDeserializer, longDeserializer) shouldBe null
   }
-  "Test2" should "run" in {
-    println(":::test")
-  }
+
 }
 
 import org.apache.kafka.streams.processor.{Processor, ProcessorSupplier}
@@ -104,8 +107,6 @@ class CustomMaxAggregator extends Processor[String, java.lang.Long] {
     val oldValue = store.get(key)
     if (oldValue == null || value > oldValue) store.put(key, value)
   }
-
-  override def punctuate(timestamp: Long): Unit = {}
 
   override def close(): Unit = {}
 
