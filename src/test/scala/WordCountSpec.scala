@@ -3,26 +3,44 @@ import org.apache.kafka.common.serialization.StringSerializer
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.test.ConsumerRecordFactory
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class WordCountSpec extends FlatSpec with Matchers with TestSpec {
+class WordCountSpec extends AnyFlatSpec with Matchers with TestSpec {
   val wordCountApplication = new WordCountApplication()
   "Convert streaming data into lowercase and publish into output topic" should "push lower text to kafka" in {
-    val driver = new TopologyTestDriver(wordCountApplication.toLowerCaseStream("input-topic", "output-topic"), config)
-    val recordFactory = new ConsumerRecordFactory("input-topic", new StringSerializer(), new StringSerializer())
+    val driver = new TopologyTestDriver(
+      wordCountApplication.toLowerCaseStream("input-topic", "output-topic"),
+      config
+    )
+    val recordFactory = new ConsumerRecordFactory(
+      "input-topic",
+      new StringSerializer(),
+      new StringSerializer()
+    )
     val words = "Hello, world world test"
     driver.pipeInput(recordFactory.create(words))
-    val record: ProducerRecord[String, String] = driver.readOutput("output-topic", stringDeserializer, stringDeserializer)
+    val record: ProducerRecord[String, String] =
+      driver.readOutput("output-topic", stringDeserializer, stringDeserializer)
     record.value() shouldBe words.toLowerCase
     driver.close()
   }
 
   "WorkCount" should "count number of words" in {
-    val driver = new TopologyTestDriver(wordCountApplication.countNumberOfWords("input-topic", "output-topic", "counts-store"), config)
-    val recordFactory = new ConsumerRecordFactory("input-topic", new StringSerializer(), new StringSerializer())
+    val driver = new TopologyTestDriver(
+      wordCountApplication
+        .countNumberOfWords("input-topic", "output-topic", "counts-store"),
+      config
+    )
+    val recordFactory = new ConsumerRecordFactory(
+      "input-topic",
+      new StringSerializer(),
+      new StringSerializer()
+    )
     val words = "Hello Kafka Streams, All streams lead to Kafka"
     driver.pipeInput(recordFactory.create(words))
-    val store: KeyValueStore[String, java.lang.Long] = driver.getKeyValueStore("counts-store")
+    val store: KeyValueStore[String, java.lang.Long] =
+      driver.getKeyValueStore("counts-store")
     store.get("hello") shouldBe 1
     store.get("kafka") shouldBe 2
     store.get("streams") shouldBe 2

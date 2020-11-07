@@ -5,7 +5,7 @@ import java.util.Properties
 
 import org.apache.kafka.clients.consumer.KafkaConsumer
 
-import scala.collection.JavaConversions._
+import scala.jdk.CollectionConverters._
 
 object SupplierConsumer {
   val topicName = "SupplierTopic"
@@ -23,7 +23,7 @@ object SupplierConsumer {
 
   while (true) {
     val records = consumer.poll(100)
-    for (record <- records) {
+    for (record <- records.asScala) {
       System.out.println("kafka_java.Supplier id= " + String.valueOf(record.value.getID) + " kafka_java.Supplier  Name = " + record.value.getName + " kafka_java.Supplier Start Date = " + record.value.getStartDate.toString)
     }
   }

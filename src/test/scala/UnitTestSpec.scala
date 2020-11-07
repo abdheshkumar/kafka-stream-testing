@@ -6,9 +6,11 @@ import org.apache.kafka.streams.{StreamsConfig, Topology, TopologyTestDriver}
 import org.apache.kafka.streams.processor.{ProcessorContext, PunctuationType, Punctuator}
 import org.apache.kafka.streams.state.{KeyValueIterator, KeyValueStore, Stores}
 import org.apache.kafka.streams.test.{ConsumerRecordFactory, OutputVerifier}
-import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfter
 
-class UnitTestSpec extends FlatSpec with BeforeAndAfter with Matchers {
+class UnitTestSpec extends AnyFlatSpec with Matchers with BeforeAndAfter {
   private var testDriver: TopologyTestDriver = _
   private var store: KeyValueStore[String, java.lang.Long] = _
   private val stringDeserializer = new StringDeserializer()
