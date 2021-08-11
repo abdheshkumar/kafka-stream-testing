@@ -3,9 +3,9 @@ val workaround = {
   ()
 }
 
-val KAFKA_VERSION = "2.6.0"
+val KAFKA_VERSION = "2.8.0"
 name := "KafkaTest"
-scalaVersion := "2.13.1"
+scalaVersion := "2.13.6"
 libraryDependencies ++= Seq(
   "org.apache.kafka" % "kafka-streams" % KAFKA_VERSION,
   "org.apache.kafka" % "kafka-clients" % KAFKA_VERSION,
